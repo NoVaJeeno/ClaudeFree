@@ -18,8 +18,8 @@ class AetherOS:
         # Dispatch durch Claude Root Kernel
         result = await dispatcher.dispatch(instruction, {})
         
-        # Sofortiger Sync mit GitHub
-        os.system("git add . && git commit -m 'Autonome System-Optimierung' && git push origin main")
+        # BUGFIX: Entfernte endlose Git-Push-Schleife
+        # GitHub-Sync wird jetzt über GitHub Actions oder manuelle Commits gehandhabt
         return result
 
 # Startpunkt für die AetherOS Umgebung
