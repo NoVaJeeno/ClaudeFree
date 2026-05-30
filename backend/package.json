@@ -5,7 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "start": "ts-node index.ts",
-    "dev": "ts-node-dev --respawn index.ts"
+    "dev": "ts-node-dev --respawn index.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^1.6.0",
