@@ -1,3 +1,10 @@
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import * as fs from 'fs';
+import * as path from 'path';
+
+const execAsync = promisify(exec);
+
 export class AutonomousAgent {
   private logs: string[] = [];
 
@@ -8,21 +15,21 @@ export class AutonomousAgent {
   async runCommand(cmd: string): Promise<{ success: boolean; output: string; error?: string }> {
     try {
       if (!cmd || typeof cmd !== 'string') {
-        throw new Error('Ungültiger Command-Format');
+        throw new Error('Ungültiges Command-Format');
       }
 
       console.log(`[Agent] Command ausgeführt: ${cmd}`);
       this.logs.push(`[${new Date().toISOString()}] CMD: ${cmd}`);
 
-      // Simulierte Command-Ausführung
-      const output = `Command '${cmd}' wurde ausgeführt`;
+      // Echte Command-Ausführung
+      const { stdout, stderr } = await execAsync(cmd);
       
       return {
         success: true,
-        output: output,
+        output: stdout || stderr || 'Befehl ausgeführt (kein Output)',
       };
     } catch (error: any) {
-      const errorMsg = error.message || 'Unbekannter Fehler';
+      const errorMsg = error.message || 'Ausführungsfehler';
       console.error(`[Agent] Fehler bei Command: ${errorMsg}`);
       return {
         success: false,
@@ -41,9 +48,14 @@ export class AutonomousAgent {
       console.log(`[Agent] GitHub Sync: ${message}`);
       this.logs.push(`[${new Date().toISOString()}] GITHUB_SYNC: ${message}`);
 
+      // Echte Git-Operationen
+      await execAsync('git add .');
+      await execAsync(`git commit -m "${message.replace(/"/g, '\\"')}"`);
+      await execAsync('git push origin main');
+
       return {
         success: true,
-        message: `GitHub synchronisiert mit Message: "${message}"`,
+        message: `GitHub synchronisiert: "${message}"`,
       };
     } catch (error: any) {
       const errorMsg = error.message || 'GitHub Sync Fehler';
