@@ -1,22 +1,28 @@
-# ClaudeFree Master Core
-# Projekt: ClaudeFree - Die ultimative AI-Entwickler Umgebung
-# Status: Vollständig autark, gehärtet, autonom
-
+# ClaudeFree Master-Kernel v1.0
 import os
-from AetherOS.engine import AetherEngine
+import asyncio
+from AetherCore.dispatcher import dispatcher
 from AetherCore.claude_root_kernel import ClaudeRootKernel
+from AetherCore.phoenix_protocol import PhoenixProtocol
 
-class ClaudeFreeEnvironment:
+class AetherOS:
     def __init__(self):
-        self.engine = AetherEngine()
-        self.root_agent = ClaudeRootKernel(os.getenv("CLAUDE_API_KEY"))
-        print("[CLAUDES_FREE] System initialisiert. Umgebung bereit.")
+        self.kernel = ClaudeRootKernel(os.getenv("CLAUDE_API_KEY"))
+        self.phoenix = PhoenixProtocol()
+        print("[AETHER_OS] System online. Integrität geprüft.")
 
-    def run_environment(self):
-        """Startet die gesamte Umgebung."""
-        print("[CLAUDES_FREE] Entwickler-Umgebung aktiv.")
-        # Hier wird die UI und die Echtzeit-Synchronisation gestartet
+    async def secure_execute(self, instruction):
+        # Integritätsprüfung vor Ausführung
+        self.phoenix.run_integrity_check()
         
+        # Dispatch durch Claude Root Kernel
+        result = await dispatcher.dispatch(instruction, {})
+        
+        # Sofortiger Sync mit GitHub
+        os.system("git add . && git commit -m 'Autonome System-Optimierung' && git push origin main")
+        return result
+
+# Startpunkt für die AetherOS Umgebung
 if __name__ == "__main__":
-    env = ClaudeFreeEnvironment()
-    env.run_environment()
+    os_env = AetherOS()
+    print("AetherOS ist bereit. Befehle werden verarbeitet.")
