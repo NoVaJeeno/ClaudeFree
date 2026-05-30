@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA Retail Widget — Demo</title>
+<style>
+  body { margin: 0; font-family: -apple-system, sans-serif; background: #f5f7f9; }
+  .demo-page {
+    max-width: 900px; margin: 0 auto; padding: 60px 24px;
+    color: #1a3a5c;
+  }
+  .logo { font-size: 13px; font-weight: 700; color: #c8a45a; letter-spacing: 1px; text-transform: uppercase; }
+  h1 { font-size: 36px; font-weight: 800; margin: 12px 0 8px; }
+  .subtitle { color: #667; font-size: 17px; margin-bottom: 48px; }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  h2 { font-size: 20px; margin: 0 0 12px; color: #1a3a5c; }
+  code {
+    background: #0d1f35;
+    color: #c8d8e8;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  pre {
+    background: #0d1f35;
+    color: #c8d8e8;
+    padding: 20px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    border-left: 3px solid #c8a45a;
+  }
+  .key-box {
+    background: #0d1f35;
+    border: 1px solid rgba(200,164,90,0.3);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .key-row { display: flex; justify-content: space-between; align-items: center; margin: 6px 0; }
+  .key-label { color: #8899aa; font-size: 12px; }
+  .key-val { color: #c8a45a; font-family: monospace; font-size: 12px; }
+  .notice {
+    background: rgba(200,164,90,0.08);
+    border: 1px solid rgba(200,164,90,0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: #6a5a3a;
+    margin: 16px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-page">
+  <div class="logo">JP Aring Advisory</div>
+  <h1>AURA Retail KI-Widget</h1>
+  <p class="subtitle">Das Widget ist aktiv — klicken Sie auf das Symbol unten rechts ↘</p>
+
+  <div class="card">
+    <h2>🔑 Ihre API-Keys</h2>
+    <div class="key-box">
+      <div class="key-row">
+        <span class="key-label">Website-Key (200 Anfragen/Tag)</span>
+        <span class="key-val">Z2xegf3fWgZ9kXFWq-1FRnwEA_IBzsjHw4UVoiJiGl0</span>
+      </div>
+      <div class="key-row">
+        <span class="key-label">Admin-Key (1000 Anfragen/Tag)</span>
+        <span class="key-val">vtooBub_5LQh5O9yI7bt-gr6SGP_Jk3J5HDVuvLqXfA</span>
+      </div>
+      <div class="key-row">
+        <span class="key-label">Reserve-Key (200 Anfragen/Tag)</span>
+        <span class="key-val">CHN2YG8c0W1bm80SNYwzeL8njG_0bFcWVCgExkFGfLw</span>
+      </div>
+    </div>
+    <div class="notice">⚠️ <strong>Wichtig:</strong> Keys sicher aufbewahren. Nur den Website-Key im Frontend einsetzen.</div>
+  </div>
+
+  <div class="card">
+    <h2>📦 Einbindung in Ihre Website</h2>
+    <p>Folgende 2 Zeilen in Ihre HTML-Datei einfügen (vor <code>&lt;/body&gt;</code>):</p>
+    <pre>&lt;script src="aura-retail-widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  AuraRetail.init({
+    apiKey: 'Z2xegf3fWgZ9kXFWq-1FRnwEA_IBzsjHw4UVoiJiGl0',
+    apiUrl: 'https://api.jp-aring-advisory.de/api/v1/analyze'
+  });
+&lt;/script&gt;</pre>
+  </div>
+
+  <div class="card">
+    <h2>🌐 API direkt nutzen (für Entwickler)</h2>
+    <pre>POST https://api.jp-aring-advisory.de/api/v1/analyze
+Headers:
+  Content-Type: application/json
+  X-API-Key: IHR_KEY
+
+Body:
+  { "question": "Ihre Retail-Frage" }
+
+Antwort:
+  { "success": true, "analysis": "Vollständige Analyse..." }</pre>
+  </div>
+
+  <div class="card">
+    <h2>🔧 Nächste Schritte</h2>
+    <p>1. <strong>Cloudflare Tunnel</strong> aktivieren → Mac-API wird öffentlich unter <code>api.jp-aring-advisory.de</code> erreichbar</p>
+    <p>2. Widget-Datei auf Ihren Webserver hochladen</p>
+    <p>3. 2 Script-Zeilen in Ihre Website einbauen</p>
+    <p>4. Fertig — Kunden können sofort Retail-Analysen erhalten</p>
+  </div>
+</div>
+
+<!-- Widget -->
+<script src="aura-retail-widget.js"></script>
+<script>
+  AuraRetail.init({
+    apiKey: 'Z2xegf3fWgZ9kXFWq-1FRnwEA_IBzsjHw4UVoiJiGl0',
+    apiUrl: 'http://127.0.0.1:49480/api/v1/analyze'
+  });
+</script>
+</body>
+</html>
