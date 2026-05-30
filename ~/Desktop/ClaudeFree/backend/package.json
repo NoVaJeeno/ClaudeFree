@@ -1,0 +1,15 @@
+{
+  "name": "claude-free-server",
+  "version": "1.0.0",
+  "description": "Autonomes Agenten-System für volle Kontrolle",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
+  "dependencies": {
+    "hono": "^4.0.0",
+    "socket.io": "^4.7.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}
