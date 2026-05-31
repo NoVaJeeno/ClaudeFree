@@ -7,5 +7,9 @@ RUN npm install
 
 COPY . .
 
+# Build TS to JS
+RUN npm run build
+
 EXPOSE 3000
-CMD ["npm", "run", "dev"]
+# Run production start (node instead of ts-node)
+CMD ["node", "dist/index.js"]
