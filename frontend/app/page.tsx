@@ -6,62 +6,86 @@ import io from 'socket.io-client';
 const socket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000');
 
 export default function Home() {
-  const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
+  const [messages, setMessages] = useState<{ sender: 'Du' | 'Agent' | 'System', text: string }[]>([]);
   const [input, setInput] = useState('');
-  const [agentStatus, setAgentStatus] = useState('Autonomes System bereit');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    socket.on('chat_message', (msg: string) => {
-      setMessages((prev) => [...prev, { sender: 'System', text: msg }]);
-    });
-    socket.on('agent_result', (res: any) => {
-      setMessages((prev) => [...prev, { sender: 'Agent', text: res.output || res.error || 'Fertig' }]);
-    });
+    socket.on('chat_message', (msg: string) => setMessages(p => [...p, { sender: 'System', text: msg }]));
+    socket.on('agent_result', (res: any) => setMessages(p => [...p, { sender: 'Agent', text: res.output }]));
     return () => { socket.off('chat_message'); socket.off('agent_result'); };
   }, []);
 
   const sendMessage = () => {
     if (!input.trim()) return;
-    socket.emit('chat_message', input);
     socket.emit('agent_task', { cmd: input });
-    setMessages((prev) => [...prev, { sender: 'Du', text: input }]);
+    setMessages(p => [...p, { sender: 'Du', text: input }]);
     setInput('');
   };
 
   return (
-    <main className="flex h-screen bg-neutral-950 text-white p-4">
-      <aside className="w-64 border-r border-neutral-800 p-4 space-y-4">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-          ClaudeFree UI v1.0
-        </h1>
-        <div className="p-3 bg-neutral-900 rounded-lg text-sm text-neutral-400">
-          Status: {agentStatus}
+    <div className="flex h-screen bg-[#0a0a0a] text-neutral-300 font-sans">
+      {/* Sidebar - Entwickler-Tools */}
+      <aside className="w-72 border-r border-neutral-800 bg-[#0d0d0d] p-6 flex flex-col gap-8">
+        <div>
+          <h1 className="text-xl font-semibold bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent mb-1">
+            ClaudeFree v2.0
+          </h1>
+          <p className="text-xs text-neutral-500 font-mono">CORE_INTEGRATION.SYSTEM</p>
+        </div>
+        
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs text-blue-400 font-mono">
+            <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+            Agent Online: Active
+          </div>
+          <div className="flex items-center gap-2 text-xs text-emerald-400 font-mono">
+            <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+            Security: Kernel OK
+          </div>
+        </div>
+
+        <div className="mt-auto space-y-2">
+          <button className="w-full py-2 text-xs rounded border border-neutral-800 hover:bg-neutral-900 transition">Integrity Check</button>
+          <button className="w-full py-2 text-xs rounded border border-neutral-800 hover:bg-neutral-900 transition">System Logs</button>
         </div>
       </aside>
-      
-      <section className="flex-1 flex flex-col p-4">
-        <div className="flex-1 overflow-y-auto space-y-4" ref={scrollRef}>
+
+      {/* Main Chat */}
+      <section className="flex-1 flex flex-col bg-[#0a0a0a]">
+        <header className="h-16 border-b border-neutral-900 flex items-center px-8 text-sm text-neutral-500">
+          Entwickler-Sitzung / Terminal_01
+        </header>
+
+        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6" ref={scrollRef}>
           {messages.map((m, i) => (
-            <div key={i} className={`p-3 rounded-xl max-w-lg ${m.sender === 'Du' ? 'bg-blue-600 ml-auto' : 'bg-neutral-800'}`}>
-              <span className="text-xs font-bold opacity-50">{m.sender}</span>
-              <p>{m.text}</p>
+            <div key={i} className={`flex gap-4 ${m.sender === 'Du' ? 'justify-end' : ''}`}>
+              {m.sender !== 'Du' && <div className="w-8 h-8 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center font-mono text-[10px]">{m.sender[0]}</div>}
+              <div className={`p-4 rounded-lg text-sm max-w-[70%] font-mono ${m.sender === 'Du' ? 'bg-blue-900/20 border border-blue-900/50 text-blue-100' : 'bg-neutral-900 border border-neutral-800'}`}>
+                {m.text}
+              </div>
             </div>
           ))}
         </div>
-        <div className="mt-4 flex gap-2">
-          <input 
-            className="flex-1 bg-neutral-900 border border-neutral-700 rounded-xl p-3 focus:outline-none focus:border-blue-500"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder="Agenten-Befehl oder Chat..."
-          />
-          <button onClick={sendMessage} className="bg-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-500">
-            Senden
-          </button>
-        </div>
+
+        <footer className="p-8 pb-4">
+          <div className="relative">
+            <input 
+              className="w-full bg-[#111] border border-neutral-800 rounded-lg p-4 pr-32 focus:outline-none focus:border-blue-500 transition font-mono text-sm"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              placeholder="claude.ask(task) --exec"
+            />
+            <button 
+              onClick={sendMessage}
+              className="absolute right-2 top-2 bg-neutral-900 hover:bg-blue-600/20 border border-neutral-800 px-4 py-2 rounded text-xs font-mono transition"
+            >
+              RUN_TASK
+            </button>
+          </div>
+        </footer>
       </section>
-    </main>
+    </div>
   );
 }
