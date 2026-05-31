@@ -1,21 +1,23 @@
-# Basis-Image mit Node.js 18
-FROM node:18-alpine
-
-# Setze Arbeitsverzeichnis
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Installiere erforderliche Build-Tools
-RUN apk add --no-cache bash
+# Baue Frontend
+COPY frontend/package*.json ./frontend/
+RUN cd frontend && npm install
+COPY frontend/ ./frontend/
+RUN cd frontend && npm run build
 
-# Kopiere alle Project-Dateien
-COPY . .
+# Backend vorbereiten
+COPY backend/package*.json ./backend/
+RUN cd backend && npm install
 
-# Installiere Abhängigkeiten für beide Bereiche (Frontend & Backend)
-RUN cd frontend && npm install && npm run build
-RUN cd backend && npm install && npm install -g ts-node
+# Finale Image-Struktur
+FROM node:18-alpine
+WORKDIR /app
 
-# Exponiere den Port
+# Kopiere Backend und Frontend-Build
+COPY --from=builder /app/backend /app/backend
+COPY --from=builder /app/frontend/.next/standalone/frontend /app/frontend
+
 EXPOSE 3001
-
-# Starte den Backend-Server
-CMD ["ts-node", "backend/index.ts"]
+CMD ["node", "backend/index.js"]
