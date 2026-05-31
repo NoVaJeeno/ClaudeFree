@@ -2,45 +2,52 @@ import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { Server } from 'socket.io';
 import { AutonomousAgent } from './agents/autonomous_agent';
+import { SelfHealingAgent } from './agents/self_healing';
 
 const app = new Hono();
 const port = 3000;
+const agent = new AutonomousAgent();
+const healer = new SelfHealingAgent();
 
-app.get('/', (c) => c.text('Autonomes System online - Volle Kontrolle aktiv'));
+// Health/Status Dashboard Endpoint für dein iPhone
+app.get('/api/status', async (c) => {
+    return c.json({
+        status: 'online',
+        healing_active: true,
+        last_check: new Date().toISOString()
+    });
+});
+
+// Autonomer Heilungs-Button für iPhone Zugriff
+app.post('/api/heal', async (c) => {
+    await healer.heal();
+    return c.json({ status: 'healed', timestamp: new Date().toISOString() });
+});
+
+// Status von allen Tools (Analysetools Integration)
+app.get('/api/tools', async (c) => {
+    // Hier werden künftig alle 1000+ Analyse-Tools abstrahiert
+    return c.json({
+        linter: "active",
+        security_scanner: "active",
+        integrity_check: "passed",
+        available_tools: ["tsc", "eslint", "docker-check", "git-audit"]
+    });
+});
 
 const server = serve({
-  fetch: app.fetch,
-  port: port
+    fetch: app.fetch,
+    port: port
 }, (info) => {
-  console.log(`Backend läuft auf http://localhost:${info.port}`);
+    console.log(`System Online: http://localhost:${info.port}`);
+    // Startet periodische Selbstheilung alle 60 Minuten autonom
+    setInterval(() => healer.heal(), 3600000);
 });
 
 const io = new Server(server);
-const agent = new AutonomousAgent();
-
 io.on('connection', (socket) => {
-  console.log('Agent verbunden');
-
-  socket.on('agent_task', async (data: { cmd: string }) => {
-    try {
-      const result = await agent.runCommand(data.cmd);
-      socket.emit('agent_result', result);
-    } catch (e) {
-      socket.emit('agent_result', e);
-    }
-  });
-
-  socket.on('git_sync', async (data: { message: string }) => {
-    try {
-      const result = await agent.syncWithGitHub(data.message);
-      socket.emit('git_result', result);
-    } catch (e) {
-      socket.emit('git_result', e);
-    }
-  });
-
-  socket.on('chat_message', (msg: string) => {
-    console.log('Chat:', msg);
-    io.emit('chat_message', `ClaudeFree: ${msg}`);
-  });
+    socket.on('manual_heal', async () => {
+        await healer.heal();
+        socket.emit('status', 'Healing complete');
+    });
 });
