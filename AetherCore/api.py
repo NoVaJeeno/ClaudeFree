@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import subprocess
 
-app = FastAPI()
+AetherAPI = FastAPI()
 
 class SystemInstruction(BaseModel):
     instruction: str
