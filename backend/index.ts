@@ -15,21 +15,21 @@ const io = new Server(server, { cors: { origin: "*" } });
 app.use(cors());
 app.use(express.json());
 
-// PORT Konfiguration
 const PORT = process.env.PORT || 3001;
 
-// 1. Frontend-Auslieferung: Wenn kein API-Pfad passt, liefere das Frontend aus
-app.use(express.static(path.join(__dirname, '../frontend/.next/standalone/public')));
+// Liefere die statischen Dateien aus dem 'out' Ordner des Frontends
+const buildPath = path.join(__dirname, '../frontend/out');
+app.use(express.static(buildPath));
+
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/.next/standalone/index.html'));
+    res.sendFile(path.join(buildPath, 'index.html'));
 });
 
-// 2. Deine API-Logik
+// APIs
 app.post('/api/agents/register', (req, res) => {
     res.json({ success: true });
 });
 
-// 3. WebSocket Terminal
 io.on('connection', (socket) => {
     socket.on('execute-command', async (data) => {
         try {
@@ -41,4 +41,4 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(PORT, () => console.log(`AetherOS läuft als Fullstack-Proxy auf Port ${PORT}`));
+server.listen(PORT, () => console.log(`AetherOS läuft im Static-Export Modus auf Port ${PORT}`));
