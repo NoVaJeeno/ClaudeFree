@@ -1,15 +1,14 @@
-FROM node:20
+FROM node:18-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
+# Copy package files
+COPY backend/package.json ./
 RUN npm install
 
-COPY . .
-
-# Build TS to JS
-RUN npm run build
+# Copy source code
+COPY backend ./
 
 EXPOSE 3000
-# Run production start (node instead of ts-node)
-CMD ["node", "dist/index.js"]
+
+CMD ["npx", "ts-node", "index.ts"]
