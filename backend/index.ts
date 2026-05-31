@@ -7,6 +7,16 @@ import { SecurityKernel } from './agents/security_kernel';
 
 const app = new Hono();
 const port = 3000;
+
+// Security Middleware
+app.use('*', async (c, next) => {
+    const apiKey = c.req.header('X-API-KEY');
+    if (apiKey !== process.env.API_KEY) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
+    await next();
+});
+
 const agent = new AutonomousAgent();
 const healer = new SelfHealingAgent();
 const security = new SecurityKernel();
@@ -15,25 +25,20 @@ const security = new SecurityKernel();
 app.get('/api/status', async (c) => {
     return c.json({
         status: 'online',
-        security_mode: 'ABSOLUT',
+        security_mode: 'STRICT',
         last_check: new Date().toISOString()
     });
 });
 
-// REMOTECONTROL: Manifest-Sync vom iPhone aus
 app.post('/api/security/sync', async (c) => {
     const hash = await security.syncManifest();
     return c.json({ status: 'manifest_synced', hash });
 });
 
-// COMMAND-GATEWAY: Autonome Ausführung von Terminal-Befehlen
+// COMMAND-GATEWAY: Whitelist-only execution
 app.post('/api/exec', async (c) => {
-    const { command } = await c.req.json();
-    // Validierung, dass nur zugelassene Command-Konzepte ausgeführt werden
-    if (command.includes('rm -rf') || command.includes('sudo')) {
-        return c.json({ status: 'error', message: 'Unauthorized command' }, 403);
-    }
-    const result = await agent.runCommand(command);
+    const { command, args } = await c.req.json();
+    const result = await agent.runCommand(command, args);
     return c.json({ status: 'success', result });
 });
 
@@ -46,7 +51,6 @@ const server = serve({
 
 const io = new Server(server);
 io.on('connection', (socket) => {
-    // Manuelle Sicherheits-Checks
     socket.on('health_check', async () => {
         const intact = await security.verifySystemIntegrity();
         socket.emit('health_status', intact ? "VERIFIED" : "MANIPULATED");
