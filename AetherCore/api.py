@@ -12,7 +12,7 @@ class SystemInstruction(BaseModel):
     instruction: str
     security_token: str
 
-@app.post("/agent/execute")
+@AetherAPI.post("/agent/execute")
 async def execute_instruction(payload: SystemInstruction):
     # Verifizierung erfolgt durch das Phoenix-Protokoll
     if payload.security_token != "MASTER_SECRET_PHOENIX":
