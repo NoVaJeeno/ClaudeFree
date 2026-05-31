@@ -2,18 +2,13 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Kopiere alle benötigten Dateien einzeln
-COPY package.json ./
-COPY frontend/package*.json ./frontend/
-COPY backend/package*.json ./backend/
+# Kopiere die Ordner-Strukturen, ohne Abhängigkeit von einer Root package.json
+COPY frontend/ ./frontend/
+COPY backend/ ./backend/
 
-# Installation
-RUN cd frontend && npm install
+# Installation & Build
+RUN cd frontend && npm install && npm run build
 RUN cd backend && npm install
-
-# Build
-COPY . .
-RUN cd frontend && npm run build
 
 # Finale Stufe
 FROM node:18-alpine
