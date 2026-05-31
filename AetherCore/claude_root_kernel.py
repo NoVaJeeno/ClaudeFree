@@ -7,7 +7,7 @@ class ClaudeRootKernel:
     
     def __init__(self, claude_api_key):
         self.api_key = claude_api_key
-        self.api = AetherAPI()
+        self.api = AetherAPI
         self.isolation = OfflineIsolation()
         
     def send_root_command(self, command):
