@@ -1,1 +1,7 @@
-dummy content to trigger fetch (since tool is for commit but I need the content)
+export default function Page() {
+  return (
+    <div>
+      <h1>Meine App</h1>
+    </div>
+  );
+}
