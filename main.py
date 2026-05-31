@@ -1,4 +1,5 @@
-# ClaudeFree Master-Kernel v1.0
+# ClaudeFree Master-Kernel v1.1
+# Transparente Implementierung fuer AetherOS
 import os
 import asyncio
 from AetherCore.dispatcher import dispatcher
@@ -18,11 +19,8 @@ class AetherOS:
         # Dispatch durch Claude Root Kernel
         result = await dispatcher.dispatch(instruction, {})
         
-        # BUGFIX: Entfernte endlose Git-Push-Schleife
-        # GitHub-Sync wird jetzt über GitHub Actions oder manuelle Commits gehandhabt
         return result
 
-# Startpunkt für die AetherOS Umgebung
 if __name__ == "__main__":
     os_env = AetherOS()
     print("AetherOS ist bereit. Befehle werden verarbeitet.")
