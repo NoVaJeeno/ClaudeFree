@@ -1,5 +1,6 @@
 # ClaudeFree Master-Kernel v1.1
 # Transparente Implementierung fuer AetherOS
+from AetherCore.api import AetherAPI as app
 import os
 import asyncio
 from AetherCore.dispatcher import dispatcher
