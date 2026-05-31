@@ -1,19 +1,27 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3001');
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState<{role: string, content: string}[]>([]);
   const [input, setInput] = useState('');
 
-  const sendMessage = async () => {
+  useEffect(() => {
+    socket.on('output', (data: any) => {
+      const response = data.stdout || data.stderr || data.error;
+      setMessages(prev => [...prev, { role: 'system', content: response }]);
+    });
+  }, []);
+
+  const sendMessage = () => {
     if (!input) return;
-    const userMsg = { role: 'user', content: input };
-    setMessages([...messages, userMsg]);
-    setInput('');
+    setMessages([...messages, { role: 'user', content: input }]);
     
-    // Hier wird das Backend aufgerufen, sobald der Endpoint existiert
-    // Für jetzt simulieren wir eine Antwort
-    setMessages(prev => [...prev, { role: 'assistant', content: 'Ich arbeite an: ' + input }]);
+    // Befehl senden
+    socket.emit('execute-command', { command: input });
+    setInput('');
   };
 
   return (
