@@ -20,7 +20,8 @@ export class SelfHealingAgent {
         // 2. Syntax-Check auf alle TypeScript Dateien
         const files = this.getAllFiles(path.join(this.projectPath, 'backend'));
         for (const file of files.filter(f => f.endsWith('.ts'))) {
-            await this.agent.runCommand(`tsc --noEmit ${file}`);
+            // Whitelist-konformer Aufruf
+            await this.agent.runCommand('tsc', ['--noEmit', file]);
         }
         
         console.log("Self-Healing abgeschlossen: Integrität hergestellt.");
@@ -36,14 +37,18 @@ export class SelfHealingAgent {
 
     private getAllFiles(dirPath: string): string[] {
         let files: string[] = [];
-        const items = fs.readdirSync(dirPath);
-        for (const item of items) {
-            const fullPath = path.join(dirPath, item);
-            if (fs.statSync(fullPath).isDirectory()) {
-                files = files.concat(this.getAllFiles(fullPath));
-            } else {
-                files.push(fullPath);
+        try {
+            const items = fs.readdirSync(dirPath);
+            for (const item of items) {
+                const fullPath = path.join(dirPath, item);
+                if (fs.statSync(fullPath).isDirectory()) {
+                    files = files.concat(this.getAllFiles(fullPath));
+                } else {
+                    files.push(fullPath);
+                }
             }
+        } catch (e) {
+            console.error("Fehler beim Datei-Scan:", e);
         }
         return files;
     }
