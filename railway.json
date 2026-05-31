@@ -3,22 +3,7 @@
   "build": {
     "builder": "NIXPACKS"
   },
-  "services": [
-    {
-      "name": "frontend",
-      "rootDirectory": "frontend",
-      "sourceDirectory": "frontend",
-      "deploy": {
-        "startCommand": "node server.js"
-      }
-    },
-    {
-      "name": "backend",
-      "rootDirectory": "backend",
-      "sourceDirectory": "backend",
-      "deploy": {
-        "startCommand": "node index.js"
-      }
-    }
-  ]
+  "deploy": {
+    "startCommand": "cd backend && node index.js"
+  }
 }
