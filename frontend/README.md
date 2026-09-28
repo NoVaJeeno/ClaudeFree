@@ -34,3 +34,11 @@ Die Registry-Einträge sind keine erfundenen Verbindungszustände: Connectoren z
 - klare Fehler bei fehlender Provider-Konfiguration;
 - lokale Memory-Daten bleiben im Browserprofil, bis ein echter Persistenz-Connector eingerichtet ist;
 - externe Schreibaktionen benötigen eine echte Integration und explizite Nutzeraktion.
+
+## Multi-Agenten-Orchestrierung und Code-Pipeline
+
+`POST /api/agents/orchestrate` erstellt einen echten synchronen Arbeitsplan. Quantum ist der Lead, Forge bearbeitet abhängige Implementierungsblöcke und Sentinel ist das abschließende Qualitäts-Gate. Bei `requestedLines: 10000` wird der Auftrag in begrenzte 800-Zeilen-Blöcke zerlegt; jeder Block trägt Abhängigkeiten und Abnahmekriterien. Mit `planOnly: true` kann der Plan ohne Modellaufruf geprüft werden. Ohne `planOnly` werden die drei Agenten nacheinander über den konfigurierten serverseitigen Provider aufgerufen.
+
+`POST /api/tools` stellt nur allowlistete Kernhandler bereit: Dateien auflisten/lesen/schreiben, Suche, Git-Status/Diff sowie feste Lint-/Build-Befehle. `writeFile` ist standardmäßig deaktiviert (`ENABLE_WORKSPACE_WRITES=false`), ebenso Build-/Lint-Ausführung (`ENABLE_CODE_EXECUTION=false`). Pfade außerhalb von `WORKSPACE_ROOT`, `.git`, `node_modules`, `.next` und `.env` werden blockiert. Es gibt keine freie Shell aus Chattext.
+
+`GET /api/connectors/github` ist ein echter serverseitiger Read-Connector und benötigt `GITHUB_TOKEN`; ohne Token wird kein verbundener Zustand behauptet. Weitere Connectoren müssen nach demselben Muster mit Scope-, Timeout- und Audit-Gates ergänzt werden.

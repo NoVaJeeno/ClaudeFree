@@ -1,6 +1,6 @@
 export type ProviderName = 'ollama' | 'cloudflare' | 'groq' | 'openrouter' | 'huggingface' | 'openai';
 
-type ProviderConfig = { name: ProviderName; baseUrl: string; apiKey?: string; model: string };
+export type ProviderConfig = { name: ProviderName; baseUrl: string; apiKey?: string; model: string };
 
 export function getProviderConfigs(): ProviderConfig[] {
   const configured: ProviderConfig[] = [];
