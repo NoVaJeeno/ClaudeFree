@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "npm --prefix frontend ci --no-audit --no-fund && npm --prefix frontend run build",
+    "build": "npm --prefix frontend ci --no-audit --no-fund && npm --prefix frontend run build && rm -rf .next && cp -R frontend/.next .next",
     "start": "npm --prefix frontend run start",
     "dev": "npm --prefix frontend run dev",
     "lint": "npm --prefix frontend run lint"
